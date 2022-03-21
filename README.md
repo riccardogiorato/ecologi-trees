@@ -17,8 +17,8 @@ You can find an online version of this project here: https://ecologi-trees.verce
 ## My Approach to the Solution
 
 1. First I cleaned up the API response on the server side, optimizing it once for all users. I grouped the items by day and ordered all the dates in chronological order;
-2. Then I switch to the Frontend, looking for the right library to showcase the Graph quickly, I choose "recharts" being one of the most used with React and also being currently supported;
-3. Finally I decided to revalidate the data from the API every 10 seconds with Next.js `revalidate` option.
+2. Then I switch to the Frontend, looking for the right library to showcase the Graph quickly, I choose ["recharts"](https://github.com/recharts/recharts) being one of the most used with React and also being currently supported;
+3. Finally I decided to revalidate the data from the API every 10 seconds with Next.js [`revalidate`](https://nextjs.org/docs/api-reference/data-fetching/get-static-props#revalidate) option.
 
 ## Libraries used
 

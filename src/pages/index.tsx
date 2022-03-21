@@ -90,6 +90,15 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           Last 30 Days
         </Button>
       </Centered>
+      <Centered>
+        <a
+          href="https://github.com/riccardogiorato/ecologi-trees"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Source Code on Github
+        </a>
+      </Centered>
     </>
   );
 };
