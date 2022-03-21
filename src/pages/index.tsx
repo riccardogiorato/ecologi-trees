@@ -42,8 +42,8 @@ const Button = styled.button`
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   data,
 }) => {
-  const [minAgeFilter, setMinAgeFilter] = useState<Date>();
-  const datesGraph = data.map((dataPoint: { x: string; y: any }) => {
+  const [minDateFilter, setMinDateFilter] = useState<Date>();
+  const treesGraphData = data.map((dataPoint: { x: string; y: any }) => {
     return {
       x: new Date(dataPoint.x),
       trees: dataPoint.y,
@@ -51,11 +51,11 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     };
   });
 
-  const filteredDatesGraph = minAgeFilter
-    ? datesGraph.filter((dataPoint: { x: Date; trees: number }) => {
-        return dataPoint.x > minAgeFilter;
+  const filteredTreesGraphData = minDateFilter
+    ? treesGraphData.filter((dataPoint: { x: Date; trees: number }) => {
+        return dataPoint.x > minDateFilter;
       })
-    : datesGraph;
+    : treesGraphData;
 
   const daysAgo30 = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 30);
   const daysAgo90 = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 90);
@@ -67,7 +67,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         <BarChart
           width={600}
           height={400}
-          data={filteredDatesGraph}
+          data={filteredTreesGraphData}
           margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
         >
           <Bar type="monotone" dataKey="trees" fill="#8884d8" />
@@ -80,32 +80,36 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       </Centered>
 
       <Centered>
-        <Button onClick={() => setMinAgeFilter(undefined)}>
+        <Button onClick={() => setMinDateFilter(undefined)}>
           Entire Timeframe
         </Button>
-        <Button onClick={() => setMinAgeFilter(daysAgo90)}>Last 90 Days</Button>
-        <Button onClick={() => setMinAgeFilter(daysAgo30)}>Last 30 Days</Button>
+        <Button onClick={() => setMinDateFilter(daysAgo90)}>
+          Last 90 Days
+        </Button>
+        <Button onClick={() => setMinDateFilter(daysAgo30)}>
+          Last 30 Days
+        </Button>
       </Centered>
     </>
   );
 };
 
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getStaticProps: GetStaticProps = async () => {
   const res = await fetch("https://x.api.ecologi.com/trees");
   const responseObject = await res.json();
 
-  const dataGrouped: Record<string, number> = {};
+  const treesGroupedByDate: Record<string, number> = {};
   responseObject.data.map((item: [string, number]) => {
     const at = new Date(item[1] * 1000).toISOString().split("T")[0];
-    if (at in dataGrouped) dataGrouped[at] += parseInt(item[0]);
-    else dataGrouped[at] = 0 + parseInt(item[0]);
+    if (at in treesGroupedByDate) treesGroupedByDate[at] += parseInt(item[0]);
+    else treesGroupedByDate[at] = 0 + parseInt(item[0]);
   });
 
-  const dates = Object.keys(dataGrouped)
+  const dates = Object.keys(treesGroupedByDate)
     .map((key) => {
       return {
         x: key,
-        y: dataGrouped[key],
+        y: treesGroupedByDate[key],
       };
     })
     .sort(
@@ -117,6 +121,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     props: {
       data: dates,
     },
+    revalidate: 10,
   };
 };
 
